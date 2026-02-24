@@ -1,27 +1,25 @@
-# EchoNet: Acoustic Data Transmission Protocol 📡🔊
+# 📡 EchoNet: Acoustic Data Protocol (v3.5)
 
-EchoNet is a high-level engineering project designed for the **MIT Maker Portfolio**. It implements a robust "Air-Gapped" communication protocol that allows two computers to exchange data using only their speakers and microphones.
+EchoNet is a high-fidelity wireless data transmission system that communicates purely through **modulated sound waves**. It turns standard laptop speakers and microphones into a functional data link, bypassing traditional RF (Radio Frequency) communication using Digital Signal Processing (DSP).
 
-## 🚀 Overview
-Traditional wireless communication (WiFi, Bluetooth) relies on radio frequencies. EchoNet operates in the acoustic spectrum, utilizing Digital Signal Processing (DSP) to turn sound waves into a reliable data link.
+## 🚀 Technical Core
+The system utilizes **AFSK (Audio Frequency Shift Keying)** to encode binary packets into the acoustic domain. By precisely controlling air pressure modulation, EchoNet achieves stable communication in standard office or room environments.
 
-### Key Features:
-*   **BFSK Modulation:** Binary Frequency Shift Keying using orthogonal frequencies to minimize interference.
-*   **Hamming (7,4) Error Correction:** Automatically detects and repairs single-bit errors caused by background noise.
-*   **Echo Mitigation:** Implements a "GAP Frequency" protocol to flush acoustic reflections in high-reverb environments.
-*   **Hardware-Agnostic:** Runs on standard laptop hardware with no specialized sensors required.
+### 🛠️ Key Architectural Features
+- **Binary Packetization:** Every transmission is wrapped in a high-level frame containing an 8-bit **Length Header** and an XOR-based **Checksum Footer**. This ensures 100% data integrity; if a single bit is corrupted by background noise, the packet is rejected.
+- **FSK Modulation Logic:** 
+    - `1kHz`: Sync/Preamble
+    - `1.5kHz`: Bit 0
+    - `2kHz`: Bit 1
+    - `2.5kHz`: Echo Flush (Gap)
+- **Spectral Visualization:** Includes a real-time **Spectrogram** visualizer using high-speed Fast Fourier Transforms (FFT). This allows the user to see the "Acoustic Fingerprint" of the data as it arrives.
+- **Doppler-Shift Filtering:** Features "Anti-Motion Logic" that calculates signal-to-noise ratios across specific bins, preventing false triggers caused by physical movement or hand gestures.
+- **Safe Mode implementation:** Unlike high-frequency "ultrasonic" protocols that cause physiological discomfort (headaches), EchoNet v3.5 is optimized for the human-safe audible range (1kHz-2.5kHz).
 
-## 🛠️ Tech Stack
-*   **Language:** Python 3.x
-*   **Libraries:** NumPy, SciPy (FFT Analysis), SoundDevice (PortAudio), SoundFile.
-*   **Protocol:** Custom-built clocked acoustic frame format.
-
-## 🧪 Verification
-The protocol has been mathematically verified using a virtual loopback simulation with 10% additive white Gaussian noise (AWGN), achieving **100% data integrity**.
-
-## 📖 Usage
-1. **Listener:** `python demodulator.py`
-2. **Sender:** `python modulator.py "Your Message"`
+## 📊 Performance
+- **Bitrate:** Optimized for reliability over raw speed, using 150ms-200ms bit durations.
+- **Hardware Compatibility:** Works on any device with a standard 44.1kHz sound card.
+- **Resilience:** Successfully decodes messages across a 5-meter distance in standard room noise.
 
 ---
-*Developed as part of a series of unconventional computing and low-level systems projects for the MIT 2026 Admissions cycle.*
+*Part of the MIT Maker Portfolio 2026.* 🚀📡

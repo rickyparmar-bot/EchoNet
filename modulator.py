@@ -1,59 +1,53 @@
 import numpy as np
 import sounddevice as sd
+import sys
 
-# --- HAMMING (7,4) ENCODER ---
-def encode_hamming(bits):
-    """Encodes 4 data bits into 7 bits (Hamming 7,4)."""
-    d1, d2, d3, d4 = bits
-    p1 = d1 ^ d2 ^ d4
-    p2 = d1 ^ d3 ^ d4
-    p3 = d2 ^ d3 ^ d4
-    return [p1, p2, d1, p3, d2, d3, d4]
+# --- SAFE AUDIBLE CONFIGURATION ---
+FS = 44100
+BIT_DURATION = 0.2 
+FREQ_START = 1000 # 1kHz (Low whistle)
+FREQ_0 = 1500 
+FREQ_1 = 2000 
+FREQ_GAP = 2500 
 
-# --- CONFIGURATION ---
-FS = 44100        
-BIT_DURATION = 0.4 
-FREQ_START = 8000 
-FREQ_0 = 10000    
-FREQ_1 = 12000    
-FREQ_GAP = 14000 
-
-def text_to_encoded_bits(text):
-    full_bits = []
+def text_to_packet(text):
+    bits = []
+    length_bin = bin(len(text))[2:].zfill(8)
+    bits.extend([int(b) for b in length_bin])
+    checksum = 0
     for char in text:
-        # Get 8 bits for the character
-        b = bin(ord(char))[2:].zfill(8)
-        b_list = [int(x) for x in b]
-        # Split into two 4-bit nibbles and encode each
-        full_bits.extend(encode_hamming(b_list[:4]))
-        full_bits.extend(encode_hamming(b_list[4:]))
-    return full_bits
+        val = ord(char)
+        checksum ^= val 
+        bin_val = bin(val)[2:].zfill(8)
+        bits.extend([int(b) for b in bin_val])
+    chk_bin = bin(checksum)[2:].zfill(8)
+    bits.extend([int(b) for b in chk_bin])
+    return bits
 
-def generate_tone(frequency, duration, volume=0.6):
+def generate_tone(frequency, duration, volume=0.5): # Lower volume by default
     t = np.linspace(0, duration, int(FS * duration), endpoint=False)
     window = np.hanning(len(t))
     return volume * np.sin(2 * np.pi * frequency * t) * window
 
 def transmit(text):
-    print(f"📡 EchoNet Robust Transmitting: '{text}'")
-    print("🛠️ Encoding with Hamming(7,4) Error Correction...")
-    bits = text_to_encoded_bits(text)
+    print(f"📡 Transmitting (SAFE MODE): '{text}'")
+    bits = text_to_packet(text)
     
-    signal = [generate_tone(FREQ_START, 1.0)] # Start signal
+    signal = [generate_tone(FREQ_START, 1.0)] 
+    signal.append(generate_tone(FREQ_GAP, 0.1))
     
     for bit in bits:
         freq = FREQ_1 if bit == 1 else FREQ_0
         signal.append(generate_tone(freq, BIT_DURATION))
-        signal.append(generate_tone(FREQ_GAP, 0.1)) # Anti-echo gap
+        signal.append(generate_tone(FREQ_GAP, 0.05))
     
-    signal.append(generate_tone(FREQ_START, 0.5)) # End signal
+    signal.append(generate_tone(FREQ_START, 0.5)) 
     
     full_signal = np.concatenate(signal)
     sd.play(full_signal, FS)
     sd.wait()
-    print(f"✅ Sent {len(bits)} bits.")
+    print("✅ Done.")
 
 if __name__ == "__main__":
-    import sys
     msg = "MIT" if len(sys.argv) < 2 else " ".join(sys.argv[1:])
     transmit(msg)
