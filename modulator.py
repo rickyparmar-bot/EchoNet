@@ -49,5 +49,5 @@ def transmit(text):
     print("✅ Done.")
 
 if __name__ == "__main__":
-    msg = "MIT" if len(sys.argv) < 2 else " ".join(sys.argv[1:])
+    msg = "HELLO WORLD" if len(sys.argv) < 2 else " ".join(sys.argv[1:])
     transmit(msg)

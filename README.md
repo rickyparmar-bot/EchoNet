@@ -30,7 +30,7 @@ python3 demodulator.py
 ### 2. The Transmitter (Broadcast)
 Send a message from another terminal or another device.
 ```bash
-python3 modulator.py "MIT 2026"
+python3 modulator.py "HELLO WORLD"
 ```
 
 ### 3. Acoustic Chat (Two-Way)

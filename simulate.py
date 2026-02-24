@@ -70,4 +70,4 @@ def run_simulation(message):
         print(f"❌ PROTOCOL ERROR: Expected '{message}', but got '{final_msg}'")
 
 if __name__ == "__main__":
-    run_simulation("MIT 2026")
+    run_simulation("HELLO WORLD")
