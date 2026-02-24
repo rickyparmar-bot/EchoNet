@@ -57,4 +57,3 @@ EchoNet/
 - [ ] **Quadrature Amplitude Modulation (QAM):** Increasing bandwidth by using phase shifts.
 
 ---
-*Part of the MIT Maker Portfolio 2026.* 🚀📡
