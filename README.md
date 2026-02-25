@@ -1,16 +1,15 @@
-# 📡 EchoNet: Acoustic Data Protocol (v3.5)
+# 📡 EchoNet: Acoustic Data Protocol (v4.2)
 
-![Version](https://img.shields.io/badge/version-3.5-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
+![Version](https://img.shields.io/badge/version-4.2-blue) ![License](https://img.shields.io/badge/license-MIT-green) ![Platform](https://img.shields.io/badge/platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)
 
 EchoNet is a high-fidelity wireless data transmission system that communicates purely through **modulated sound waves**. By bypassing traditional RF protocols, it turns standard consumer hardware into a functional acoustic modem.
 
 ## 🚀 The Core Engineering
 The protocol utilizes **AFSK (Audio Frequency Shift Keying)** to encode binary packets into the acoustic domain. It is designed to be resilient against echoes and ambient noise.
 
-### 🛠️ Key Architectural Pillars
-- **Frame Structure:** Every packet contains a sync preamble, an 8-bit length header, the payload, and an XOR-based checksum.
-- **Anti-Motion Logic:** Utilizes high-resolution FFT analysis to filter out Doppler-shift interference caused by movement in the physical environment.
-- **Safe Mode:** Operating range constrained to **1kHz - 2.5kHz** to ensure maximum hardware compatibility and zero physiological discomfort.
+- **Forward Error Correction (FEC):** Implements **Hamming (7,4)** encoding to automatically detect and correct single-bit flips in the data stream.
+- **High-Freq Mode:** Operating range shifted to **8kHz - 14kHz** for improved throughput and reduced audible interference.
+- **Real-time Visualization:** Integrated Matplotlib-based Spectrogram for live signal monitoring.
 
 ---
 
@@ -21,8 +20,14 @@ The protocol utilizes **AFSK (Audio Frequency Shift Keying)** to encode binary p
 pip install numpy sounddevice scipy python-dotenv
 ```
 
-### 1. The Receiver (Always Listen)
-Run the demodulator first. It will calibrate the noise floor and wait for a signal.
+### 1. The Watcher (Visualizer)
+See the data waterfall in real-time.
+```bash
+python3 visualizer.py
+```
+
+### 2. The Receiver (Always Listen)
+Run the demodulator next. It will calibrate the noise floor and wait for a signal.
 ```bash
 python3 demodulator.py
 ```
@@ -44,8 +49,9 @@ python3 echotalk.py
 ## 📂 Project Structure
 ```text
 EchoNet/
-├── modulator.py    # Binary to Audio signal generator
-├── demodulator.py  # Audio to Binary decoder (FFT based)
+├── modulator.py    # Binary to Audio signal generator (Hamming FEC)
+├── demodulator.py  # Audio to Binary decoder (Error Correction)
+├── visualizer.py   # Real-time Spectrogram monitor [NEW]
 ├── echotalk.py     # Interactive chat interface
 ├── README.md       # Technical documentation
 └── .env            # Configuration secrets
